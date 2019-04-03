@@ -1,8 +1,7 @@
 #lang racket/base
 
 (require racket/match
-         racket/contract
-         )
+         racket/contract)
 
 (module+ test
   (require rackunit
@@ -11,6 +10,7 @@
 (provide string-immutable/c
          path-string-immutable/c
          trimmed-string-px
+         Ricoeur oe \\oe
          (contract-out
           [title<?
            (-> string-immutable/c string-immutable/c any/c)]
@@ -19,6 +19,10 @@
                symbol?
                (or/c #f string?))]
           ))
+
+(define Ricoeur "Ricœur")
+(define oe "œ")
+(define \\oe #\œ)
 
 (define/final-prop string-immutable/c
   (flat-named-contract
@@ -33,7 +37,10 @@
 
 (define/final-prop trimmed-string-px
   ;; n.b. \S only matches ASCII
+  ;; BUT THIS WILL CHANGE in 7.3 !
+  ;; https://github.com/racket/racket/commit/30e260835fc84e445e364265aa96a53788787afb
   ;; TODO: add tests
+  ;; is there non-ascii whitespace we need to think about ?
   #px"^[^\\s]$|^[^\\s].*[^\\s]$")
 
 (define (attributes-ref attrs k)

@@ -1,8 +1,7 @@
 #lang racket/base
 
 (require racket/path
-         racket/contract
-         )
+         racket/contract)
 
 (provide (contract-out
           [xml-path?
@@ -12,6 +11,3 @@
 (define (xml-path? pth)
   (let ([ext (path-get-extension pth)])
     (and ext (regexp-match? #rx"^(?i:\\.xml)$" ext))))
-
-
-

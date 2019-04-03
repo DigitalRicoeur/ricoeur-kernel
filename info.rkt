@@ -12,6 +12,7 @@
 (define deps
   '(["base" #:version "7.2"]
     "adjutor"
+    "reprovide-lang"
     "gregor"
     "functional-lib"))
 
