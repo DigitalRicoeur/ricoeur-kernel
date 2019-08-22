@@ -9,8 +9,9 @@
 
 (provide string-immutable/c
          path-string-immutable/c
+         bytes-immutable/c
          trimmed-string-px
-         Ricoeur oe \\oe
+         Ricoeur oe \\oe DigitalRicoeur
          (contract-out
           [title<?
            (-> string-immutable/c string-immutable/c any/c)]
@@ -23,6 +24,7 @@
 (define Ricoeur "Ricœur")
 (define oe "œ")
 (define \\oe #\œ)
+(define DigitalRicoeur "Digital Ricœur")
 
 (define/final-prop string-immutable/c
   (flat-named-contract
@@ -35,13 +37,17 @@
    (or/c path? (and/c string-immutable/c
                       path-string?))))
 
+(define/final-prop bytes-immutable/c
+  (flat-named-contract
+   'bytes-immutable/c
+   (and/c bytes? immutable?)))
+
 (define/final-prop trimmed-string-px
-  ;; n.b. \S only matches ASCII
-  ;; BUT THIS WILL CHANGE in 7.3 !
-  ;; https://github.com/racket/racket/commit/30e260835fc84e445e364265aa96a53788787afb
+  ;; n.b. as of Racket 7.4,
+  ;; \S matches anything except space, tab, newline, formfeed, or return.
   ;; TODO: add tests
-  ;; is there non-ascii whitespace we need to think about ?
-  #px"^[^\\s]$|^[^\\s].*[^\\s]$")
+  ;; Is there non-ascii whitespace we need to think about ?
+  #px"^(?:\\S|\\S.*\\S)$")
 
 (define (attributes-ref attrs k)
   (define rslt
@@ -53,7 +59,9 @@
 
 (define normalize-title
   (match-lambda
-    [(pregexp #px"^(?i:an?|the)\\s+([^\\s].*)$" (list _ trimmed))
+    ;; see note on trimmed-string-px
+    ;; TODO: French - or just wait for the bibliographic database?
+    [(pregexp #px"^(?i:an?|the)\\s+(\\S.*)$" (list _ trimmed))
      ;; N.B.: If this were exported, should use string->immutable-string
      trimmed]
     [full full]))
